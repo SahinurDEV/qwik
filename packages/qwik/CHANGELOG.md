@@ -1,5 +1,22 @@
 # @qwik.dev/core
 
+## 2.0.0-rc.4
+
+### Patch Changes
+
+- 🐞🩹 click-to-source now finds elements created in the browser during dev (by [@Aejkatappaja](https://github.com/Aejkatappaja) in [#9210](https://github.com/QwikDev/qwik/pull/9210))
+
+- 🐞🩹 rewrite destructured props used as computed keys in nested closures (by [@Varixo](https://github.com/Varixo) in [#9215](https://github.com/QwikDev/qwik/pull/9215))
+
+- 🐞🩹 computed signals recompute once and without stale sources in diamond dependency graphs (by [@Varixo](https://github.com/Varixo) in [#9212](https://github.com/QwikDev/qwik/pull/9212))
+
+- 🐞🩹 preserve pre-resume interactions on WebKit while HTML streaming stalls. (by [@akasakariko](https://github.com/akasakariko) in [#9208](https://github.com/QwikDev/qwik/pull/9208))
+
+  The default `module` qwikloader strategy now starts the loader from a small inline bootstrap script instead of an external `<script type="module" src>` tag. The bootstrap receives the CSP nonce like other Qwik inline scripts, so nonce-based policies keep working. Deployments that allow inline scripts by hash instead (for example `script-src 'self'` plus a fixed list of `'sha256-...'` hashes) must add a hash for the new bootstrap script, otherwise the browser will block it.
+
+- Updated dependencies [[`51dc669`](https://github.com/QwikDev/qwik/commit/51dc6692c6b345caaf4767be4069ad6ddfa55225)]:
+  - @qwik.dev/optimizer@2.1.0-rc.10
+
 ## 2.0.0-rc.3
 
 ### Patch Changes

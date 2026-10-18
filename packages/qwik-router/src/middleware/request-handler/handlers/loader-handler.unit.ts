@@ -286,6 +286,33 @@ describe('loaderHandler', () => {
     expect(requestEv.send).not.toHaveBeenCalled();
   });
 
+  it('skips an SSR-blocking data loader that opts out of guarding loader requests', async () => {
+    const requestEv = createRequestEv();
+    const catalogLoader = {
+      __id: 'catalog-loader',
+      __qrl: { call: vi.fn(async () => 'catalog'), getHash: () => 'catalog-loader' },
+      __blockSSR: true,
+      __blockLoaderRequests: false,
+    };
+    const productLoader = {
+      __id: 'loader-id',
+      __qrl: { call: vi.fn(async () => 'product'), getHash: () => 'loader-id' },
+      __blockSSR: true,
+    };
+
+    await loaderHandler([catalogLoader as any, productLoader as any])(requestEv as any);
+
+    expect(catalogLoader.__qrl.call).not.toHaveBeenCalled();
+    expect(productLoader.__qrl.call).toHaveBeenCalledOnce();
+    expect(requestEv.send).toHaveBeenCalledWith(200, expect.any(String));
+
+    requestEv.sharedMap.set(QLoaderId, 'catalog-loader');
+    await loaderHandler([catalogLoader as any, productLoader as any])(requestEv as any);
+
+    expect(catalogLoader.__qrl.call).toHaveBeenCalledOnce();
+    expect(productLoader.__qrl.call).toHaveBeenCalledOnce();
+  });
+
   it('returns 404 when the requested loader is not available on the matched route', async () => {
     const requestEv = createRequestEv();
 

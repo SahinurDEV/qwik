@@ -886,6 +886,12 @@ export type LoaderOptions = {
    * qwikVite plugin options.
    */
   readonly blockSSR?: boolean;
+  /**
+   * Whether this loader runs before downstream loader JSON requests (default: true). Set false for
+   * independent data loaders that do not guard access to other loaders. This does not change
+   * whether the loader blocks SSR.
+   */
+  readonly blockLoaderRequests?: boolean;
 };
 
 /** @public */
@@ -1043,6 +1049,7 @@ export interface LoaderInternal extends Loader<any> {
   __cacheKey: CacheKeyFn | undefined;
   __search: string[] | undefined;
   __blockSSR: boolean;
+  __blockLoaderRequests: boolean;
   (): LoaderSignal<unknown>;
 }
 

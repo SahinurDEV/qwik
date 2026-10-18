@@ -295,6 +295,17 @@ describe('route loader execution', () => {
     expect(loader.__cacheControl).toBe('immutable');
   });
 
+  it('can skip unrelated loader requests while still blocking SSR', () => {
+    const loader = routeLoaderQrl(createQrl('catalog-loader'), {
+      blockLoaderRequests: false,
+    }) as LoaderInternal;
+    const guard = routeLoaderQrl(createQrl('guard-loader')) as LoaderInternal;
+
+    expect(loader.__blockSSR).toBe(true);
+    expect(loader.__blockLoaderRequests).toBe(false);
+    expect(guard.__blockLoaderRequests).toBe(true);
+  });
+
   it('rejects blockSSR: false when the experimental flag is not enabled', () => {
     expect(() => routeLoaderQrl(createQrl('bg-loader'), { blockSSR: false })).toThrowError(
       /experimental/

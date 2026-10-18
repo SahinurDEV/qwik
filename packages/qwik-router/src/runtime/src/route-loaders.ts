@@ -506,6 +506,7 @@ function getLoaderOptions(rest: (LoaderOptions | DataValidator)[]) {
   let cacheKey: LoaderOptions['cacheKey'] | undefined;
   let search: string[] | undefined;
   let blockSSR = true;
+  let blockLoaderRequests = true;
   const validators: DataValidator[] = [];
 
   if (rest.length === 1) {
@@ -537,6 +538,7 @@ function getLoaderOptions(rest: (LoaderOptions | DataValidator)[]) {
         } else if (globalThis.__STRICT_LOADERS__) {
           search = [];
         }
+        blockLoaderRequests = options.blockLoaderRequests !== false;
         if (options.blockSSR === false) {
           if (!__EXPERIMENTAL__.blockSSR) {
             throw new Error(
@@ -560,6 +562,7 @@ function getLoaderOptions(rest: (LoaderOptions | DataValidator)[]) {
     cacheKey,
     search,
     blockSSR,
+    blockLoaderRequests,
   };
 }
 
@@ -1091,8 +1094,17 @@ export function routeLoaderQrl(
   loaderQrl: QRL<(event: RequestEventLoader) => unknown>,
   ...rest: (LoaderOptions | DataValidator)[]
 ): LoaderInternal {
-  const { id, validators, serializationStrategy, cacheControl, eTag, cacheKey, search, blockSSR } =
-    getLoaderOptions(rest);
+  const {
+    id,
+    validators,
+    serializationStrategy,
+    cacheControl,
+    eTag,
+    cacheKey,
+    search,
+    blockSSR,
+    blockLoaderRequests,
+  } = getLoaderOptions(rest);
 
   function loader() {
     const state = _resolveContextWithoutSequentialScope(RouteStateContext)!;
@@ -1112,6 +1124,7 @@ export function routeLoaderQrl(
   loader.__cacheKey = cacheKey;
   loader.__search = search;
   loader.__blockSSR = blockSSR;
+  loader.__blockLoaderRequests = blockLoaderRequests;
   Object.freeze(loader);
   return loader;
 }

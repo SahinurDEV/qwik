@@ -155,7 +155,7 @@ async function runBlockingLoadersBeforeTarget(
     if (loader === targetLoader) {
       return;
     }
-    if (loader.__blockSSR) {
+    if (loader.__blockSSR && loader.__blockLoaderRequests !== false) {
       await loadRouteLoader(loader, requestEv);
     }
   }
